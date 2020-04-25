@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { Text, Box, Avatar, TextField, Button } from "gestalt";
@@ -10,18 +10,19 @@ function App() {
   const todoItemRef = useRef();
 
   const handleAddBtnClick = () => {
-    todos.push({ todo: todoItem, key: Date.now() });
-    setTodos(todos);
+    setTodos([...todos, { todo: todoItem, key: Date.now() }]);
     setTodoItem("");
     console.log(todos);
   };
 
   const handleRemoveBtnClick = () => {
-    todos.pop();
-    setTodoItem("");
     console.log(todos);
-    setTodos(todos);
+    setTodos(todos.splice(todos.length, 1));
   };
+
+  useEffect(() => {
+    console.log("effect");
+  });
 
   return (
     <Box>
