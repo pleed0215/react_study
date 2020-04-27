@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import "./hello.scss";
 import { Text, Box, Avatar, TextField, Button } from "gestalt";
 import "gestalt/dist/gestalt.css";
 
@@ -54,7 +55,7 @@ function App() {
   };
 
   return (
-    <Box width="50%" {...fadeIn}>
+    <Box width="50%" {...fadeIn} color="green">
       <Box
         alignItems="center"
         display="flex"

@@ -1,0 +1,7 @@
+$red: #fa5222;
+$orange: orange;
+@mixin square($size) {
+  $caculated: 32px * $size;
+  width: $calculated;
+  height: $calculated;
+}
