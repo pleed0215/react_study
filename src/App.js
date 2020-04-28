@@ -1,102 +1,66 @@
 import React, { useState, useRef, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import "./hello.scss";
-import { Text, Box, Avatar, TextField, Button } from "gestalt";
-import "gestalt/dist/gestalt.css";
+import { Grommet, Box, Button, Heading, TextInput, Collapsible, ResponsiveContext, Header, Footer, Main } from "grommet";
+import { Home } from "grommet-icons";
 
-const useGestaltInput = (initVal, validator, inputErrMsg) => {
-  const [value, setValue] = useState(initVal);
-  let errorMessage = validator(value) ? "" : inputErrMsg;
-  const onChange = ({ value }) => {
-    setValue(value);
+const AppBar = (props) => (
+  <Box
+    tag='header'
+    direction='row'
+    align='center'
+    justify='between'
+    background='brand'
+    pad={{ left: 'medium', right: 'small', vertical: 'small' }}
+    elevation='medium'
+    style={{ zIndex: '1' }}
+    {...props}
+  />
+);
+
+
+const TodoTemplate = () => {
+  const theme = {
+    global: {
+      font: {
+        family: 'Roboto',
+        size: '18px',
+        height: '20px',
+      },
+    },
   };
-  return { value, onChange, setValue, errorMessage };
-};
-
-const useGestaltFadeIn = () => {
-  const element = useRef();
-
-  useEffect(() => {
-    if (element.current) {
-      const { current } = element;
-      current.style.transition = "opacity 3s";
-      current.style.opacity = 1;
-    }
-  }, []);
-
-  return {
-    ref: element,
-    dangerouslySetInlineStyle: { __style: { opacity: 0 } },
-  };
-};
-
-function App() {
-  const [todos, setTodos] = useState([]);
-  const lengthUnderTen = (value) => value.length < 10;
-  const todoItem = useGestaltInput(
-    "Say Hello",
-    lengthUnderTen,
-    "Length must be under 10"
-  );
-  const todoItemRef = useRef();
-  const fadeIn = useGestaltFadeIn();
-
-  const handleAddBtnClick = () => {
-    setTodos([...todos, { todo: todoItem.value, key: Date.now() }]);
-    todoItem.setValue("");
-    console.log(todos);
-  };
-
-  const handleRemoveBtnClick = () => {
-    console.log(todos);
-    todos.pop();
-    setTodos([...todos]);
-  };
-
+  const [showSideBar, setShowSideBar] = useState(false);
   return (
-    <Box width="50%" {...fadeIn} color="green">
-      <Box
-        alignItems="center"
-        display="flex"
-        direction="row"
-        marginStart={5}
-        marginEnd={5}
-        marginTop={5}
-        width="100%"
-      >
-        <Box paddingX={1} display="flex" direction="row" width="100%">
-          <Box paddingX={2} width="50%">
-            <TextField
-              ref={todoItemRef}
-              name="todoitem"
-              placeholder="Write your item."
-              {...todoItem}
-            />
+    <Grommet theme={theme} full>
+      <Box fill justify="center" align="center">
+        <Box width="70%" height="70vh" >
+          <Box height="10%" background="status-ok" justify="center" align="center">
+            <Heading level={2} textAlign="center" color="light-1">
+              Todo List with Grommet
+            </Heading>
           </Box>
-          <Box
-            paddingX={2}
-            justifyContent="evenly"
-            width="100%"
-            display="flex"
-            direction="rows"
-          >
-            <Button onClick={handleAddBtnClick} text="Add to list" inline />
-            <Button
-              onClick={handleRemoveBtnClick}
-              text="Remove the last"
-              inline
-            />
+          <Box direction="row" height="15%" border justify="center" align="center" margin={{ "vertical": "xsmall" }}>
+            <Box basis="2/3" margin="xsmall">
+              <TextInput fill />
+            </Box>
+            <Box basis="1/3" margin="xsmall">
+              <Button fill label="Add List" />
+            </Box>
+          </Box>
+          <Box border={{ "side": "left|right" }} fill>
+
           </Box>
         </Box>
       </Box>
-      <Box marginStart={5} display="flex" direction="column">
-        <Text>{todos.length + " todo"}</Text>
-        {todos.map((item) => {
-          return <Text key={item.key}>{item.todo}</Text>;
-        })}
-      </Box>
-    </Box>
+    </Grommet >
+  )
+};
+
+function App() {
+
+
+  return (
+    <TodoTemplate />
   );
 }
 
