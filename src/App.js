@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import {
@@ -16,12 +16,12 @@ import {
   Form,
   FormField,
   CheckBox,
-  Text,
+  Markdown,
 } from "grommet";
-import { Home } from "grommet-icons";
+import { FormTrash } from "grommet-icons";
 
-const TodoItem = ({ todo }) => {
-  const [checked, setChecked] = useState(false);
+const TodoItem = ({ item, onRemove }) => {
+  const [checked, setChecked] = useState(item.check);
   return (
     <Box
       width="100%"
@@ -34,19 +34,31 @@ const TodoItem = ({ todo }) => {
     >
       <CheckBox
         checked={checked}
-        onChange={(e) => setChecked(e.target.checked)}
+        onChange={(e) => {
+          setChecked(!checked);
+          item.check = !checked;
+          console.log(item, checked);
+        }}
       />
-      <Text>{todo.item}</Text>
+      <Markdown>{checked ? "~~" + item.item + "~~" : item.item}</Markdown>
+      <Button
+        icon={<FormTrash />}
+        onClick={() => {
+          onRemove(item.id);
+        }}
+      />
     </Box>
   );
 };
 
-const TodoList = ({ todos }) => {
+const TodoList = ({ todos, onRemove }) => {
   return (
     <List
       primaryKey="item"
       data={todos}
-      children={(item, index) => <TodoItem todo={item} />}
+      children={(item, index) => {
+        return <TodoItem item={item} onRemove={onRemove} />;
+      }}
     />
   );
 };
@@ -64,6 +76,12 @@ const TodoTemplate = () => {
   const [todoInput, setTodoInput] = useState({});
   const [todoList, setTodoList] = useState([]);
   const textInput = useRef();
+  const onRemove = useCallback(
+    (id) => {
+      setTodoList(todoList.filter((todo) => todo.id !== id));
+    },
+    [todoList]
+  );
 
   return (
     <Grommet theme={theme} full>
@@ -88,8 +106,12 @@ const TodoTemplate = () => {
               const { todo } = todoInput;
               textInput.current.value = "";
               setTodoInput({});
-              if (todo && todo.length > 0)
-                setTodoList([...todoList, { item: todo }]);
+              if (todo && todo.length > 0) {
+                setTodoList([
+                  ...todoList,
+                  { id: Date.now(), item: todo, check: false },
+                ]);
+              }
             }}
             onReset={() => {
               setTodoInput({});
@@ -123,7 +145,11 @@ const TodoTemplate = () => {
             background="white"
             round={{ size: "medium", corner: "bottom" }}
           >
-            <TodoList todos={todoList} />
+            <TodoList
+              todos={todoList}
+              state={setTodoList}
+              onRemove={onRemove}
+            />
           </Box>
         </Box>
       </Box>
