@@ -18,37 +18,18 @@ import {
   CheckBox,
   Markdown,
 } from "grommet";
-import { FormTrash } from "grommet-icons";
+import TodoItem from "./TodoItem";
 
-const TodoItem = ({ item, onRemove }) => {
-  const [checked, setChecked] = useState(item.check);
-  return (
-    <Box
-      width="100%"
-      heigth="medium"
-      align="center"
-      justify="start"
-      direction="row"
-      gap="small"
-      pad="small"
-    >
-      <CheckBox
-        checked={checked}
-        onChange={(e) => {
-          setChecked(!checked);
-          item.check = !checked;
-          console.log(item, checked);
-        }}
-      />
-      <Markdown>{checked ? "~~" + item.item + "~~" : item.item}</Markdown>
-      <Button
-        icon={<FormTrash />}
-        onClick={() => {
-          onRemove(item.id);
-        }}
-      />
-    </Box>
-  );
+const createBulkTodo = () => {
+  const array = [];
+  for (let i = 0; i < 2500; i++) {
+    array.push({
+      id: Date.now(),
+      item: `A thing todo number ${i}`,
+      check: false,
+    });
+  }
+  return array;
 };
 
 const TodoList = ({ todos, onRemove }) => {
@@ -74,14 +55,15 @@ const TodoTemplate = () => {
     },
   };
   const [todoInput, setTodoInput] = useState({});
-  const [todoList, setTodoList] = useState([]);
+  const [todoList, setTodoList] = useState(createBulkTodo);
   const textInput = useRef();
-  const onRemove = useCallback(
-    (id) => {
-      setTodoList(todoList.filter((todo) => todo.id !== id));
-    },
-    [todoList]
-  );
+  const onRemove = useCallback((id) => {
+    setTodoList((todos) => todos.filter((todo) => todo.id !== id));
+  }, []);
+
+  const onChangeInput = useCallback((nextValue) => {
+    setTodoInput(nextValue);
+  }, []);
 
   return (
     <Grommet theme={theme} full>
@@ -99,9 +81,7 @@ const TodoTemplate = () => {
             </Heading>
           </Box>
           <Form
-            onChange={(nextValue) => {
-              setTodoInput(nextValue);
-            }}
+            onChange={onChangeInput}
             onSubmit={({ _, __ }) => {
               const { todo } = todoInput;
               textInput.current.value = "";
